@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soccer Teammate Finder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Soccer Teammate Finder</h1>
+        <p>Enter a list of players and see if a specific player has been teammates with any of them.</p>
+        
+        <div class="input-group">
+            <textarea id="playerList" rows="8" placeholder="Paste a list of players here, one per line...&#10;e.g.,&#10;Xavi Hernández&#10;Andrés Iniesta&#10;Carles Puyol"></textarea>
+            <input type="text" id="singlePlayer" placeholder="Enter single player to check, e.g., Lionel Messi">
+        </div>
+        
+        <button id="checkButton">Find Teammates</button>
+        
+        <div id="result">
+            <p>The result will be shown here.</p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
