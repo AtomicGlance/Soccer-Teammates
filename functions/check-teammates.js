@@ -4,7 +4,7 @@ export async function onRequest(context) {
   }
 
   try {
-    // 1. Get data from the frontend, now including the "mode".
+    // 1. Get data from the frontend, including the "mode".
     const { mode, playerList, singlePlayer } = await context.request.json();
     const GEMINI_API_KEY = context.env.GEMINI_API_KEY;
 
@@ -16,25 +16,30 @@ export async function onRequest(context) {
 
     // 2. Generate the correct prompt based on the selected mode.
     if (mode === 'common') {
-      // PROMPT 1: For finding a common teammate for the entire list.
+      // ** NEW, MORE ROBUST PROMPT **
+      // This prompt forces the AI to think step-by-step.
       prompt = `
-        Your task is to act as a world-class soccer historian. I will provide a list of players. You must find one or more players who have been an official teammate with EVERY player on this list at some point in their careers (either at a professional club or on a national team).
+        Your task is to act as a world-class soccer historian and solve a logic puzzle. I will provide a list of players. You must determine if there is a player who has been an official teammate with EVERY player on this list at some point in their careers.
 
-        List of players to find a common teammate for:
+        List of players to analyze:
         ---
         ${playerList}
         ---
 
-        Please format your response as follows:
-        1. If you find a common teammate, start with a clear summary sentence, for example: "Sergio Busquets has been a teammate with everyone on the list."
-        2. Below the summary, provide a bulleted list that proves the connection for each player on the original list. For example:
-           - Teammate with Lionel Messi at FC Barcelona (2008-2021) and Inter Miami (2023-Present).
-           - Teammate with Andrés Iniesta on the Spanish National Team (2009-2018).
-           - Teammate with Sergio Ramos on the Spanish National Team (2009-2021).
-        3. If no single player has been a teammate with everyone on the list, state that clearly and concisely.
+        Follow these steps precisely:
+        1.  **Step 1: Analyze Teammates for Each Player.** For each player on the list, mentally list out some of their most well-known teammates from their various clubs and national teams.
+        2.  **Step 2: Find the Intersection.** Compare the lists of teammates you generated in Step 1. Identify any players who appear as a teammate for ALL of the players on the original list.
+        3.  **Step 3: Formulate the Final Answer.** Based on your analysis in Step 2, provide your answer.
+
+        **Answer Formatting Rules:**
+        -   If you find one or more common teammates, start with a clear summary sentence, for example: "Yes, Keylor Navas has been a teammate with everyone on the list."
+        -   Then, provide a bulleted list that proves the connection for each player on the original list. For example:
+            - Teammate with Cristiano Ronaldo at Real Madrid (2014-2018).
+            - Teammate with Sergio Ramos at Real Madrid (2014-2021) and PSG (2021-2023).
+        -   If, after your step-by-step analysis, you are certain no single player has been a teammate with everyone on the list, state that clearly.
       `;
     } else {
-      // PROMPT 2: The original prompt for checking one player against a list.
+      // PROMPT 2: The original prompt (this one works well).
       prompt = `
         I have a single focus soccer player: "${singlePlayer}".
         I also have a list of other players provided below:
@@ -48,7 +53,7 @@ export async function onRequest(context) {
       `;
     }
 
-    // 3. The API call logic remains the same, just with the chosen prompt.
+    // 3. The API call logic remains the same.
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
     const requestBody = {
       contents: [{ parts: [{ text: prompt }] }]
@@ -76,11 +81,11 @@ export async function onRequest(context) {
     };
     
     return new Response(JSON.stringify(frontendResponse), {
-      headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: message }), {
+    return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
