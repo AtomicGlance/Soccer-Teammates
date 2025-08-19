@@ -9,11 +9,17 @@
 <body>
     <div class="container">
         <h1>Soccer Teammate Finder</h1>
-        <p>Enter a list of players and see if a specific player has been teammates with any of them.</p>
+        <p>Enter a list of players to find connections.</p>
         
         <div class="input-group">
-            <textarea id="playerList" rows="8" placeholder="Paste a list of players here, one per line...&#10;e.g.,&#10;Xavi Hernández&#10;Andrés Iniesta&#10;Carles Puyol"></textarea>
-            <input type="text" id="singlePlayer" placeholder="Enter single player to check, e.g., Lionel Messi">
+            <textarea id="playerList" rows="8" placeholder="Paste a list of players here, one per line...&#10;e.g.,&#10;Lionel Messi&#10;Andrés Iniesta&#10;Sergio Ramos"></textarea>
+            
+            <div class="option-group">
+                <input type="checkbox" id="findCommonTeammate" name="findCommonTeammate">
+                <label for="findCommonTeammate">Find a common teammate for this list</label>
+            </div>
+
+            <input type="text" id="singlePlayer" placeholder="Enter single player to check against list">
         </div>
         
         <button id="checkButton">Find Teammates</button>

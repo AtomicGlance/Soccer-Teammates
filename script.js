@@ -1,31 +1,46 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Get references to all HTML elements
     const checkButton = document.getElementById('checkButton');
     const playerListInput = document.getElementById('playerList');
     const singlePlayerInput = document.getElementById('singlePlayer');
+    const findCommonTeammateCheckbox = document.getElementById('findCommonTeammate');
     const resultDiv = document.getElementById('result');
 
     const API_ENDPOINT = '/check-teammates';
 
+    // Event listener to hide/show the single player input based on the checkbox
+    findCommonTeammateCheckbox.addEventListener('change', () => {
+        singlePlayerInput.style.display = findCommonTeammateCheckbox.checked ? 'none' : 'block';
+    });
+
     const performCheck = async () => {
         const playerList = playerListInput.value.trim();
         const singlePlayer = singlePlayerInput.value.trim();
+        const isFindingCommon = findCommonTeammateCheckbox.checked;
 
-        if (!playerList || !singlePlayer) {
-            resultDiv.innerHTML = '<p>Please provide both a list of players and a single player.</p>';
+        // Validation: Ensure the list is not empty
+        if (!playerList) {
+            resultDiv.innerHTML = '<p>The player list cannot be empty.</p>';
             return;
         }
 
+        // Update UI to a loading state
         checkButton.disabled = true;
         checkButton.textContent = 'Searching...';
-        resultDiv.innerHTML = '<p>Consulting the AI scout...</p>';
+        resultDiv.innerHTML = '<p>Consulting the AI historian...</p>';
 
         try {
+            // The request body now includes a "mode" to tell the backend what to do
+            const requestBody = {
+                mode: isFindingCommon ? 'common' : 'single',
+                playerList: playerList,
+                singlePlayer: singlePlayer,
+            };
+            
             const response = await fetch(API_ENDPOINT, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ playerList, singlePlayer })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
             });
 
             const data = await response.json();
@@ -35,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             const aiResponse = data.choices[0].message.content;
-
             resultDiv.innerHTML = `<p>${aiResponse.replace(/\n/g, '<br>')}</p>`;
 
         } catch (error) {
