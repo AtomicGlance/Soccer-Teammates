@@ -3,6 +3,7 @@ Soccer Teammate Finder
 A web application that uses the Google Gemini AI to find connections between professional soccer players. The app can check if a specific player has been a teammate with anyone on a given list or find a common teammate for an entire list of players.
 
 Live Demo: https://soccer-teammates.pages.dev/
+
 ⚽ Features
 
 This tool offers two distinct modes for discovering player connections:
